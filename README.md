@@ -77,7 +77,15 @@ Content-Type: application/json
 }
 ```
 
-#### Responses
+#### Example in cURL:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/products \
+-H "Content-Type: application/json" \
+-d '{"product":{"sku":"ABC-123","name":"My product","price":"12.50","metadata":"from api"}}'
+```
+
+#### Example Responses
 
 **Product Found (200 OK)**
 ```json
