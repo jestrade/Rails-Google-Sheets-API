@@ -1,80 +1,157 @@
 # Rails Google Sheets MCP
 
-This is a minimal Rails API (microservice) that receives a product and checks if it exists in a Google Sheets spreadsheet. If the product exists it returns the product data; if it doesn't exist it adds the product to the sheet and returns the created row.
+[![GitHub](https://img.shields.io/github/license/jestrade/Rails-Google-Sheets-MCP)](https://github.com/jestrade/Rails-Google-Sheets-MCP)
+[![Ruby](https://img.shields.io/badge/Ruby-3.4.7-red)](https://www.ruby-lang.org/)
+[![Rails](https://img.shields.io/badge/Rails-8.1.1-red)](https://rubyonrails.org/)
 
-## Overview
+A lightweight Rails API service that integrates with Google Sheets to manage product inventory. It checks for existing products by SKU and creates new entries when needed, all while providing robust error tracking through Bugsnag.
 
-- Rails API-only app (no DB required)
-- Uses `google_drive` gem to interact with Google Sheets using a Service Account
-- Exposes a single endpoint: POST /api/v1/products
+## Features
 
-## Ruby version
-`ruby 3.4.7`
+- Rails 8.1 API-only application (no database required)
+- Seamless Google Sheets integration via Service Account
+- Real-time product lookup by SKU
+- Automatic product creation for new SKUs
+- Comprehensive error tracking with Bugsnag
+- SSL-secured API endpoints
 
-## System dependencies
-- gem 'google_drive', '~> 3.3'
-- gem 'dotenv-rails', groups: [:development, :test]
+## Prerequisites
 
-Run `bundle install` after adding.
+- Ruby 3.4.7
+- Bundler
+- Google Cloud Service Account with Sheets API access
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd rails_mcp_gsheet_products
+   ```
+
+2. Install dependencies:
+   ```bash
+   bundle install
+   ```
 
 ## Configuration
 
-Create a `.env` file with the following variables:
-```
-GOOGLE_SERVICE_ACCOUNT_JSON=google_service_account_key.json
-GOOGLE_SHEET_KEY=<gsheet_key>
-BUGSNAG_API_KEY=<bugsnag_api_key>
-```
+1. Create a `.env` file in the root directory with the following variables:
+   ```env
+   # Google Sheets Configuration
+   GOOGLE_SERVICE_ACCOUNT_JSON=path/to/your/service-account.json
+   GOOGLE_SHEET_KEY=your_google_sheet_id
+   
+   # Bugsnag Configuration
+   BUGSNAG_API_KEY=your_bugsnag_api_key
+   ```
 
-Tip: share the spreadsheet with the service account email (found in the JSON) with Editor permissions.
+2. For Google Sheets access:
+   - Share your spreadsheet with the service account email (found in your service account JSON)
+   - Grant at least Editor permissions
 
-## How to run the test suite
+## Running the Application
 
-## Services (job queues, cache servers, search engines, etc.)
-
-## Execute server
-```
-rails s
-```
-
-
-## Behavior
-- Search the sheet for a row where the SKU column matches `sku`.
-- If found: return 200 + the row as JSON.
-- If not found: append a new row, return 201 + the new row as JSON.
-
-# Example usage (curl)
+Start the development server:
 ```bash
-curl -X POST http://localhost:3000/api/v1/products \
--H "Content-Type: application/json" \
--d '{"product":{"sku":"ABC-123","name":"My product","price":"12.50","metadata":"from api"}}'
+rails server
 ```
 
+The API will be available at `http://localhost:3000`
 
-Responses:
-- If exists (200):
+## API Endpoint
 
+### Create or Find Product
 
+```http
+POST /api/v1/products
+Content-Type: application/json
+
+{
+  "product": {
+    "sku": "ABC-123",
+    "name": "Product Name",
+    "price": "19.99",
+    "metadata": "Additional information"
+  }
+}
+```
+
+#### Responses
+
+**Product Found (200 OK)**
 ```json
-{ "exists": true, "product": { "sku":"ABC-123", "name":"My product", "price":"12.50", "metadata":"..." } }
+{
+  "exists": true,
+  "product": {
+    "sku": "ABC-123",
+    "name": "Existing Product",
+    "price": "19.99",
+    "metadata": "Existing product details"
+  }
+}
 ```
 
-
-- If created (201):
-
-
+**Product Created (201 Created)**
 ```json
-{ "exists": false, "created": { "sku":"ABC-123", "name":"My product", "price":"12.50", "metadata":"from api" } }
+{
+  "exists": false,
+  "created": {
+    "sku": "ABC-123",
+    "name": "New Product",
+    "price": "19.99",
+    "metadata": "New product details"
+  }
+}
 ```
 
+**Error (4xx/5xx)**
+```json
+{
+  "error": "Error message describing the issue"
+}
+```
 
-# Deployment / notes
+## Error Handling
 
-- For local dev put `GOOGLE_SERVICE_ACCOUNT_JSON` into `.env`, set `GOOGLE_SERVICE_ACCOUNT_JSON=/path/to/key.json` and ensure the file is present in the container.
-- Make sure the service account email (from the key JSON) is added as an editor to the spreadsheet.
-- For production use, enforce rate limiting and authentication. Google Sheets is not a true database — consider using a DB for heavy load.
+The application includes comprehensive error handling:
+- All unhandled exceptions are captured and reported to Bugsnag
+- Google Sheets API errors are gracefully handled
+- Invalid requests receive appropriate status codes and error messages
 
+## Development Notes
 
-# Testing suggestions
-- Create a test spreadsheet with headers: `sku, name, price, metadata`
-- Test with duplicate SKUs and verify matching behavior
+### SSL Configuration
+If you encounter SSL certificate verification issues with Bugsnag, the application includes a patch that adjusts the SSL verification settings. This is automatically loaded in the initializers.
+
+### Testing
+To run the test suite:
+```bash
+bundle exec rspec
+```
+
+### Deployment
+For production deployment:
+1. Set appropriate environment variables
+2. Consider adding rate limiting
+3. Enable proper authentication
+4. Monitor performance as Google Sheets has API rate limits
+
+## Troubleshooting
+
+### Common Issues
+- **Permission Denied**: Ensure the service account has edit access to the spreadsheet
+- **Invalid JSON**: Verify the `GOOGLE_SERVICE_ACCOUNT_JSON` is valid JSON
+- **SSL Errors**: The application includes a patch for common SSL verification issues
+
+## License
+
+[Specify your license here]
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
