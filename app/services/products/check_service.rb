@@ -12,7 +12,7 @@ module Products
 
     def call
       validator = Products::ValidatorService.new(@product)
-      
+
       unless validator.valid?
         return {
           success: false,

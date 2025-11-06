@@ -19,7 +19,7 @@ RSpec.describe GeminiService do
               contents: [
                 {
                   role: 'user',
-                  parts: [{ text: prompt }]
+                  parts: [ { text: prompt } ]
                 }
               ]
             )
