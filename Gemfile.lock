@@ -173,7 +173,7 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.15.2)
+    json (2.16.0)
     jwt (2.10.2)
       base64
     kamal (2.8.2)
@@ -205,7 +205,7 @@ GEM
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
-    minitest (5.26.0)
+    minitest (5.26.1)
     msgpack (1.8.0)
     multi_json (1.17.0)
     multipart-post (2.4.1)
@@ -321,10 +321,10 @@ GEM
     rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-rails (6.1.5)
-      actionpack (>= 6.1)
-      activesupport (>= 6.1)
-      railties (>= 6.1)
+    rspec-rails (8.0.2)
+      actionpack (>= 7.2)
+      activesupport (>= 7.2)
+      railties (>= 7.2)
       rspec-core (~> 3.13)
       rspec-expectations (~> 3.13)
       rspec-mocks (~> 3.13)
@@ -456,7 +456,7 @@ DEPENDENCIES
   pry
   puma (>= 5.0)
   rails (~> 8.1.1)
-  rspec-rails (~> 6.0)
+  rspec-rails (~> 8.0)
   rubocop-rails-omakase
   shoulda-matchers
   solid_cable
